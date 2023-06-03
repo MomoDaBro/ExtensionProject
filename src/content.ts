@@ -1,4 +1,6 @@
 import { parse } from 'csv-parse/sync';
+import {GITHUB_TOKEN} from "./env";
+
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 
 const findProfName = () => {
@@ -25,7 +27,7 @@ const main = async () => {
     const gradeDataURL = "https://api.github.com/repos/acmutd/utd-grades/contents/raw_data/Fall 2022.csv"
     const headers = {
         Accept: "application/vnd.github+json",
-        Authorization: "Bearer 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",
+        Authorization: `Bearer ${GITHUB_TOKEN}`,
         "X-GitHub-Api-Version": "2022-11-28"
     }
 
