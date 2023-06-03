@@ -1,3 +1,9 @@
+# Node
 node_modules
-.idea
 
+# Output
+dist
+
+# IDE
+.idea
+.vscode
