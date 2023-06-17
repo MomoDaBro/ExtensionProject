@@ -1,14 +1,21 @@
-import { parse } from 'csv-parse/sync';
+import {parse} from 'csv-parse/sync';
 import {GITHUB_TOKEN} from "./env";
 
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 
-const findProfName = () => {
+const findCourseInfo = () => {
     const classInfoULElement = document.querySelector(".css-fgox3d-fieldsCss") as HTMLUListElement
-
     const spanElements = classInfoULElement.querySelectorAll("span")
+    return [
+        spanElements[Array.from(spanElements).findIndex((element) => element.innerText === "Instructor") + 1].innerText,
+        spanElements[Array.from(spanElements).findIndex((element) => element.innerText === "Subject") + 1].innerText,
+        spanElements[Array.from(spanElements).findIndex((element) => element.innerText === "Course") + 1].innerText
+    ]
+}
 
-    return spanElements[Array.from(spanElements).findIndex((element) => element.innerText === "Instructor") + 1].innerText
+const formatProfName = (profName: string) => {
+    let stringArray = profName.split(" ", 2)
+    return stringArray[1] + ", " + stringArray[0]
 }
 
 const main = async () => {
@@ -19,8 +26,11 @@ const main = async () => {
     classInfoToggleButton.click()
     classInfoToggleButton.click()
 
-    const profName = findProfName();
+    let [profName, courseName, courseNum] = findCourseInfo()
+    profName = formatProfName(profName)
     console.log(profName)
+    console.log(courseName)
+    console.log(courseNum)
 
     //TODO retrieve the fall 2022 CSV from utd grades repo
 
@@ -32,9 +42,68 @@ const main = async () => {
     }
 
     const UTDGradesData = (await (await fetch(gradeDataURL, {headers})).json()).content
+    type classInfo = {
+        Subject: string,
+        'Catalog Nbr': string,
+        'Instructor 1': string,
+        'Instructor 2': string,
+        'Instructor 3': string,
+        'Instructor 4': string,
+        'Instructor 5': string,
+        'Instructor 6': string,
+        'A+': string,
+        'A': string,
+        'A-': string,
+        'B+': string,
+        'B': string,
+        'B-': string,
+        'C+': string,
+        'C': string,
+        'C-': string,
+        'D+': string,
+        'D': string,
+        'D-': string,
+        'F': string,
+        'W': string,
+    }
 
-    //NOTE parse this csv to find the correct data for professor
-    console.log(parse(Buffer.from(UTDGradesData, 'base64')))
+    const parsedData: classInfo[] = parse(Buffer.from(UTDGradesData, 'base64'), {
+        columns: true
+    })
+
+    console.log(parsedData)
+
+    let courseMatchArr: classInfo[] = []
+
+    for (let i = 0; i < parsedData.length; i++) {
+        if (parsedData[i]["Instructor 1"] === profName) {
+            if (parsedData[i].Subject === courseName && parsedData[i]["Catalog Nbr"] == courseNum) {
+                courseMatchArr.push(parsedData[i])
+            }
+        } else if (parsedData[i]["Instructor 2"] === profName) {
+            if (parsedData[i].Subject === courseName && parsedData[i]["Catalog Nbr"] == courseNum) {
+                courseMatchArr.push(parsedData[i])
+            }
+        } else if (parsedData[i]["Instructor 3"] === profName) {
+            if (parsedData[i].Subject === courseName && parsedData[i]["Catalog Nbr"] == courseNum) {
+                courseMatchArr.push(parsedData[i])
+            }
+        } else if (parsedData[i]["Instructor 4"] === profName) {
+            if (parsedData[i].Subject === courseName && parsedData[i]["Catalog Nbr"] == courseNum) {
+                courseMatchArr.push(parsedData[i])
+            }
+        } else if (parsedData[i]["Instructor 5"] === profName) {
+            if (parsedData[i].Subject === courseName && parsedData[i]["Catalog Nbr"] == courseNum) {
+                courseMatchArr.push(parsedData[i])
+            }
+        } else if (parsedData[i]["Instructor 6"] === profName) {
+            if (parsedData[i].Subject === courseName && parsedData[i]["Catalog Nbr"] == courseNum) {
+                courseMatchArr.push(parsedData[i])
+            }
+        }
+    }
+
+    console.log(courseMatchArr)
 
 }
 main();
